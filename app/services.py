@@ -1,12 +1,17 @@
-from .models import User
+from .models import db, User
 
 class UserService:
     @staticmethod
-    def get_all_usernames():
-        users = User.query.with_entities(User.name).all()
-        return [user.name for user in users]
+    def get_all_users():
+        return User.query.all()
     
     @staticmethod
-    def get_all_userId():
-        users = User.query.with_entities(User.id).all()
-        return [user.id for user in users]
+    def create_user(name, email):
+        new_user = User(name=name, email=email)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        return new_user
+    
+    
