@@ -1,29 +1,19 @@
-from flask import Flask, jsonify
-import mysql.connector
+from flask import Flask
+from config import SQLALCHEMY_DATABASE_URI, SQLALCHEMY_TRACK_MODIFICATIONS
+from app.models import db
+import logging
+from app import create_app
+
 
 app = Flask(__name__)
+app = create_app()
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = SQLALCHEMY_TRACK_MODIFICATIONS
 
-db = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="maria",
-    database="testdb"
-)
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
-cursor = db.cursor()
-
-@app.route('/')
-def hello_world():
-    return 'Hello, World!'
-
-@app.route('/home')
-def home():
-    try:
-        cursor.execute("SELECT * FROM users")
-        users = cursor.fetchall()
-        return jsonify(users)
-    except mysql.connector.Error as err:
-        return f"Error: {err}"
+db.init_app(app)
 
 if __name__ == '__main__':
     app.run(debug=True)
