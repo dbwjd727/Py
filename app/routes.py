@@ -79,6 +79,12 @@ def login_user():
         
     return render_template('user/login.html')
 
+#포켓몬 목록
+@main.route('/pocketmon/list')
+def list_pocketmon():
+    pocketmons = PocketmonService.get_all_pocketmon()
+    return render_template('pocketmon/list.html', pocketmon=pocketmons )
+
 #포켓몬 등록
 @main.route('/pocketmon/insert', methods=['GET','POST'])
 def insert_pocketmon():
@@ -93,3 +99,16 @@ def insert_pocketmon():
         return redirect(url_for('main.index'))
     
     return render_template('pocketmon/insert.html')
+
+#포켓몬 수정
+@main.route('/pocketmon/update/<int:pocketmon_id>', methods=['PUT'])
+def update_pocketmon(user_id):
+    data = request.get_json()  # 클라이언트에서 전송한 JSON 데이터 받기
+    new_name = data.get('name')
+    new_type = data.get('type')
+
+    if UserService.update_pocketmon(user_id, new_name, new_type):
+        return jsonify({'message': '수정 완료'}), 200
+    else:
+        return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 404
+    

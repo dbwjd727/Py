@@ -27,7 +27,7 @@ class UserService:
     
     # 사용자 정보 업데이트하기
     @staticmethod
-    def update_user(id, name=None, email=None):
+    def update_user(id, name, email):
         # 사용자 조회
         user = User.query.get(id)
 
@@ -66,6 +66,11 @@ class UserService:
     
 ###pocketmon
 class PocketmonService:
+    #모든 정보 출력
+    @staticmethod
+    def get_all_pocketmon():
+        return Pocketmon.query.all()
+    
     #insert
     @staticmethod
     def create_pocketmon(name, type):
@@ -75,3 +80,22 @@ class PocketmonService:
         db.session.commit()
 
         return new_pocketmon
+    
+    #포켓몬 수정
+    @staticmethod
+    def update_pocketmon(id, name, type):
+        pocketmon = User.query.get(id)
+
+        # pocketmon 존재하는지 확인
+        if pocketmon:
+            if name:
+                pocketmon.name = name
+            if type:
+                pocketmon.type = type
+
+            # 변경 사항을 데이터베이스에 반영
+            db.session.commit()
+
+            return True  # 업데이트 성공
+        else:
+            return False  # 사용자가 존재하지 않음
