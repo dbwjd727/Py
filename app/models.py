@@ -9,3 +9,12 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.name}>'
+    
+class Pocketmon(db.Model):
+    __tablename__  = 'pocketmon'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    type = db.Column(db.String(80), nullable=False)
+
+    def __repr__(self):
+        return f'<Pockemon {self.name}>'

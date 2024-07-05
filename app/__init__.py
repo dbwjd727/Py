@@ -9,6 +9,7 @@ def create_app():
     app.config.from_object(Config)
 
     init_app(app)
+
     app.register_blueprint(main)
 
     # CORS 정책 설정
