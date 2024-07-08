@@ -21,7 +21,7 @@ class UserService:
     @staticmethod
     def login_user(name, email):
         user = User.query.filter_by(email=email).first()
-        if user and user.check_name(name):
+        if user and user.name == name:
             return user
         return None
     
