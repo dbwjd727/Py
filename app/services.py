@@ -61,8 +61,12 @@ class UserService:
         else:
             return False
 
-
-        
+    #내정보 출력
+    def get_user_by_id(user_id):
+        for user in User:
+            if user['id'] == user_id:
+                return user
+        return None
     
 ###pocketmon
 class PocketmonService:

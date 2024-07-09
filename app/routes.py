@@ -19,12 +19,33 @@ def list_user():
     users = UserService.get_all_users()
     return render_template('user/list.html', users=users )
 
+# 마이페이지
+@main.route('/info/<id>', methods=['GET'])
+def get_user_info(id):
+    print('유저 아이디::::::', id)
+
+    user = UserService.get_user_by_id(id)
+
+    if not user:
+        return jsonify({"error": "사용자를 찾을 수 없습니다."}), 404
+
+    user_info = {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "created_at": user.created_at.strftime('%Y-%m-%d %H:%M:%S')  # 예시: 시간 포맷 변경
+    }
+
+    return jsonify(user_info), 200
+    
+
 #회원가입 페이지
 @main.route('/user/insert', methods=['POST'])
 def insert_user():
     if request.method == 'POST':
-        name = request.form.get('name')
-        email = request.form.get('email')
+        data = request.get_json()
+        name = data.get('name')
+        email = data.get('email')
 
         if not name or not email:
             return jsonify({"error": "이름 또는 이메일을 모두 입력해주세요."}), 400
@@ -81,6 +102,9 @@ def login_user():
 
     # GET 요청은 여기서 처리하지 않음
     return jsonify({"error": "POST 메서드만 지원됩니다."}), 405
+
+
+
 
 #포켓몬 목록
 @main.route('/pocketmon/list')
