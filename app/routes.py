@@ -13,6 +13,10 @@ def swagger_ui():
 def index():
     return render_template('home.html')
 
+@main.route('/map')
+def map():
+    return render_template('map.html')
+
 #회원 목록 페이지
 @main.route('/user/list')
 def list_user():
@@ -20,11 +24,13 @@ def list_user():
     return render_template('user/list.html', users=users )
 
 # 마이페이지
-@main.route('/info/<id>', methods=['GET'])
-def get_user_info(id):
-    print('유저 아이디::::::', id)
+@main.route('/info', methods=['GET'])
+def get_user_info():
+    login_id = request.args.get('loginId')
 
-    user = UserService.get_user_by_id(id)
+    user = UserService.get_user_info(login_id)
+    print(':::::::가져온 정보::::::::', user)  
+
 
     if not user:
         return jsonify({"error": "사용자를 찾을 수 없습니다."}), 404
@@ -33,6 +39,7 @@ def get_user_info(id):
         "id": user.id,
         "name": user.name,
         "email": user.email,
+        "grade": user.grade,
         "created_at": user.created_at.strftime('%Y-%m-%d %H:%M:%S')  # 예시: 시간 포맷 변경
     }
 
@@ -60,22 +67,29 @@ def insert_user():
 
 
 #수정
-@main.route('/user/update/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
+@main.route('/user/update', methods=['PUT'])
+def update_user():
+
     data = request.get_json()  # 클라이언트에서 전송한 JSON 데이터 받기
+    login_id = data.get('loginId')
     new_name = data.get('name')
     new_email = data.get('email')
 
-    if UserService.update_user(user_id, new_name, new_email):
-        return jsonify({'message': '수정 완료'}), 200
+    # print('::::::::::::클라이언트 입력!!!!!!!:::::::::', login_id,new_name, new_email)
+
+    if UserService.update_user(login_id, new_name, new_email):
+        return jsonify({'message': '수정 완료','loginId': login_id, 'name': new_name, 'email': new_email}), 200
     else:
         return jsonify({'error': '사용자를 찾을 수 없습니다.'}), 404
     
 
 #삭제
-@main.route('/user/delete/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
-    if UserService.delete_user(user_id):
+@main.route('/user/delete', methods=['DELETE'])
+def delete_user():
+    login_id = request.args.get('loginId')
+    print(':::::::탈퇴할 아이디::::::::', login_id)
+
+    if UserService.delete_user(login_id):
         return jsonify({'message': '삭제 완료'}), 200
     else:
         return jsonify({'error', '실패'}), 404
